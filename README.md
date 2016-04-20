@@ -7,5 +7,12 @@ curl -H "Content-Type: application/json" -X POST -d '{"url":"http://el.s.todo.to
 
 To run:
 
+cp sample.env .env
 npm install
 npm start
+
+Env values
+
+TOKEN: Required, this is the token created by bitly, it's a secret to everybody.
+PORT: Required, defaults to 8714.
+ALLOWED_ORIGIN: Whatever origin you want to allow. Not required for local dev.
