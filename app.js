@@ -4,6 +4,7 @@ var express = require('express'),
     helmet = require('helmet'),
     cors = require('cors'),
     rateLimit = require('express-rate-limit'),
+    throng = require('throng'),
     bodyParser = require('body-parser');
 
 Habitat.load();
@@ -13,6 +14,7 @@ var app = express(),
     Bitly = require('bitly'),
     bitly = new Bitly(env.get('TOKEN')),
     port = env.get('PORT'),
+    workers = env.get('WEB_CONCURRENCY') || 1,
     allowedOrigin = env.get('ALLOWED_ORIGIN');
 
 app.enable('trust proxy');
@@ -46,5 +48,10 @@ app.post('/generate/', function(req, res) {
   });
 });
 
-app.listen(port);
-console.log('Server started! At http://localhost:' + port);
+throng({
+  workers,
+  start: function() {
+    app.listen(port);
+    console.log('Server started! At http://localhost:' + port);
+  }
+});
