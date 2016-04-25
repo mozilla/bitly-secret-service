@@ -3,19 +3,32 @@ var express = require('express'),
     compression = require('compression'),
     helmet = require('helmet'),
     cors = require('cors'),
-    rateLimit = require('express-rate-limit'),
     throng = require('throng'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    Bitly = require('bitly'),
+    ExpressBrute = require('express-brute'),
+    RedisStore = require('express-brute-redis');
 
 Habitat.load();
 
 var app = express(),
     env = new Habitat(),
-    Bitly = require('bitly'),
     bitly = new Bitly(env.get('TOKEN')),
     port = env.get('PORT'),
+    redisUrl = env.get('REDIS_URL'),
     workers = env.get('WEB_CONCURRENCY') || 1,
+    proxyDepth = env.get('PROXY_DEPTH') || 0,
     allowedOrigin = env.get('ALLOWED_ORIGIN');
+
+var store;
+if (redisUrl) {
+  store = new RedisStore(require('redis-url').parse(redisUrl));
+} else {
+  store = new ExpressBrute.MemoryStore();
+}
+var bruteforce = new ExpressBrute(store, {
+  proxyDepth: proxyDepth
+});
 
 app.enable('trust proxy');
 
@@ -24,8 +37,6 @@ app.use(bodyParser.json());
 // support encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Just going to start with default rate limit config.
-app.use(rateLimit());
 app.use(helmet());
 app.use(compression());
 app.use(cors({
@@ -35,7 +46,7 @@ app.use(helmet.hsts({
   maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
 }));
 
-app.post('/generate/', function(req, res) {
+app.post('/generate/', bruteforce.prevent, function(req, res) {
   var earlOfUrl = req.body.url;
   if (!earlOfUrl) {
     res.send("");
