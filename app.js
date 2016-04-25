@@ -17,15 +17,18 @@ var app = express(),
     port = env.get('PORT'),
     redisUrl = env.get('REDIS_URL'),
     workers = env.get('WEB_CONCURRENCY') || 1,
+    proxyDepth = env.get('PROXY_DEPTH') || 0,
     allowedOrigin = env.get('ALLOWED_ORIGIN');
 
-var bruteforce;
-
+var store;
 if (redisUrl) {
-  bruteforce = new ExpressBrute(new RedisStore(require('redis-url').parse(redisUrl)));
+  store = new RedisStore(require('redis-url').parse(redisUrl));
 } else {
-  bruteforce = new ExpressBrute(new ExpressBrute.MemoryStore());
+  store = new ExpressBrute.MemoryStore();
 }
+var bruteforce = new ExpressBrute(store, {
+  proxyDepth: proxyDepth
+});
 
 app.enable('trust proxy');
 
