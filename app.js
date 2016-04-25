@@ -22,7 +22,10 @@ var app = express(),
 
 var store;
 if (redisUrl) {
-  store = new RedisStore(require('redis-url').parse(redisUrl));
+  redisUrl = require('redis-url').parse(redisUrl);
+  redisUrl.host = redisUrl.hostname;
+  redisUrl.auth_pass = redisUrl.password;
+  store = new RedisStore(redisUrl);
 } else {
   store = new ExpressBrute.MemoryStore();
 }
