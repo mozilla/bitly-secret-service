@@ -6,7 +6,7 @@ var express = require('express'),
     throng = require('throng'),
     bodyParser = require('body-parser'),
     Bitly = require('bitly'),
-    ExpressBrute = require('express-brute'),
+    redisRateLimiter = require('redis-rate-limiter'),
     RedisStore = require('express-brute-redis');
 
 Habitat.load();
@@ -19,19 +19,6 @@ var app = express(),
     workers = env.get('WEB_CONCURRENCY') || 1,
     proxyDepth = env.get('PROXY_DEPTH') || 0,
     allowedOrigin = env.get('ALLOWED_ORIGIN');
-
-var store;
-if (redisUrl) {
-  redisUrl = require('redis-url').parse(redisUrl);
-  redisUrl.host = redisUrl.hostname;
-  redisUrl.auth_pass = redisUrl.password;
-  store = new RedisStore(redisUrl);
-} else {
-  store = new ExpressBrute.MemoryStore();
-}
-var bruteforce = new ExpressBrute(store, {
-  proxyDepth: proxyDepth
-});
 
 app.enable('trust proxy');
 
@@ -49,7 +36,15 @@ app.use(helmet.hsts({
   maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
 }));
 
-app.post('/generate/', bruteforce.prevent, function(req, res) {
+if (redisUrl) {
+  app.use(redisRateLimiter.middleware({
+    redis: require('redis-url').parse(redisUrl),
+    key: 'ip',
+    rate: '100/minute'
+  }));
+}
+
+app.post('/generate/', function(req, res) {
   var earlOfUrl = req.body.url;
   if (!earlOfUrl) {
     res.send("");
