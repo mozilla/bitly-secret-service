@@ -15,18 +15,14 @@ var app = express(),
     env = new Habitat(),
     bitly = new Bitly(env.get('TOKEN')),
     port = env.get('PORT'),
-    redisHost = env.get('REDIS_HOST'),
-    redisPort = env.get('REDIS_PORT'),
+    redisUrl = env.get('REDIS_URL'),
     workers = env.get('WEB_CONCURRENCY') || 1,
     allowedOrigin = env.get('ALLOWED_ORIGIN');
 
 var bruteforce;
 
-if (redisHost && redisPort) {
-  bruteforce = new ExpressBrute(new RedisStore({
-    host: redisHost,
-    port: redisPort
-  }));
+if (redisUrl) {
+  bruteforce = new ExpressBrute(new RedisStore(require('redis-url').parse(redisUrl)));
 } else {
   bruteforce = new ExpressBrute(new ExpressBrute.MemoryStore());
 }

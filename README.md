@@ -18,8 +18,7 @@ $> npm install
 | PORT | Required, defaults to 8714 |
 | ALLOWED_ORIGIN | Whatever origin you want to allow. Not required for local dev |
 | ALLOWED_ORIGIN | Whatever origin you want to allow. Not required for local dev |
-| REDIS_HOST | Location for redis server, not required for local dev |
-| REDIS_PORT | Port for redis server, not required for local dev |
+| REDIS_URL | Url for redis server, not required for local dev |
 
 ## To run
 
