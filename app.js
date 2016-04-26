@@ -40,7 +40,7 @@ if (redisUrl) {
   app.use(redisRateLimiter.middleware({
     redis: require('redis-url').parse(redisUrl),
     key: env.get('LIMIT_USING_X_FORWARED_FOR') ? 'x-forwarded-for' : 'ip',
-    rate: '100/minute'
+    rate: env.get('RATE_LIMIT') || '30/minute'
   }));
 }
 
