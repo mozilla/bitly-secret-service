@@ -6,7 +6,9 @@ var express = require('express'),
     throng = require('throng'),
     bodyParser = require('body-parser'),
     Bitly = require('bitly'),
-    redisRateLimiter = require('redis-rate-limiter');
+    redis = require('redis'),
+    redisRateLimiter = require('redis-rate-limiter'),
+    redisOpts;
 
 Habitat.load();
 
@@ -41,8 +43,10 @@ function getXForwardedFor(request) {
 }
 
 if (redisUrl) {
+  redisOpts = require('redis-url').parse(redisUrl);
+  redisOpts.host = redisOpts.hostname;
   app.use(redisRateLimiter.middleware({
-    redis: require('redis-url').parse(redisUrl),
+    redis: redis.createClient(redisOpts),
     key: env.get('LIMIT_USING_X_FORWARED_FOR') ? getXForwardedFor : 'ip',
     rate: env.get('RATE_LIMIT') || '30/minute'
   }));
