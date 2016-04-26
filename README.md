@@ -19,6 +19,8 @@ $> npm install
 | ALLOWED_ORIGIN | Whatever origin you want to allow. Not required for local dev |
 | ALLOWED_ORIGIN | Whatever origin you want to allow. Not required for local dev |
 | REDIS_URL | Url for redis server, not required for local dev |
+| RATE_LIMIT | rate/window for rate limiting, defaults to 30/minute, can use second/minute/hour |
+| LIMIT_USING_X_FORWARED_FOR | How we detect for rate limiting, set to true when hosted behind a proxy/load balancer/router |
 
 ## To run
 
