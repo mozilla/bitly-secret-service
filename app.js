@@ -35,10 +35,15 @@ app.use(helmet.hsts({
   maxAge: 90 * 24 * 60 * 60 * 1000 // 90 days
 }));
 
+function getXForwardedFor(request) {
+  var ips = request.get('X-Forwarded-For').split(/ *, */);
+  return ips[ips.length - 1];
+}
+
 if (redisUrl) {
   app.use(redisRateLimiter.middleware({
     redis: require('redis-url').parse(redisUrl),
-    key: env.get('LIMIT_USING_X_FORWARED_FOR') ? 'x-forwarded-for' : 'ip',
+    key: env.get('LIMIT_USING_X_FORWARED_FOR') ? getXForwardedFor : 'ip',
     rate: env.get('RATE_LIMIT') || '30/minute'
   }));
 }
