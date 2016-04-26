@@ -38,7 +38,7 @@ app.use(helmet.hsts({
 if (redisUrl) {
   app.use(redisRateLimiter.middleware({
     redis: require('redis-url').parse(redisUrl),
-    key: env.get('LIMIT_USING_X_FORWARED_FOR') ? 'x-forwarded-for' : 'ip',
+    key: env.get('LIMIT_USING_X_FORWARED_FOR') ? 'X-Forwarded-For' : 'ip',
     rate: env.get('RATE_LIMIT') || '30/minute'
   }));
 }
