@@ -6,8 +6,7 @@ var express = require('express'),
     throng = require('throng'),
     bodyParser = require('body-parser'),
     Bitly = require('bitly'),
-    redisRateLimiter = require('redis-rate-limiter'),
-    RedisStore = require('express-brute-redis');
+    redisRateLimiter = require('redis-rate-limiter');
 
 Habitat.load();
 
