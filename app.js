@@ -39,7 +39,7 @@ app.use(helmet.hsts({
 
 function getXForwardedFor(request) {
   var ips = request.get('X-Forwarded-For').split(/ *, */);
-  return ips[ips.length - 1];
+  return ips[0];
 }
 
 if (redisUrl) {
