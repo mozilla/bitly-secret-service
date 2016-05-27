@@ -58,7 +58,7 @@ app.post('/generate/', function(req, res) {
     res.send("");
   }
   bitly.shorten(earlOfUrl).then(function(response) {
-    var short_url = response.data.url;
+    var short_url = response.data.url.replace('http', 'https');
     res.send(short_url);
   }, function(error) {
     throw error;
