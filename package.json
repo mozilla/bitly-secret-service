@@ -1,6 +1,7 @@
 {
   "name": "bitly-secret-service",
   "version": "1.0.0",
+  "repository": "https://github.com/mozilla/bitly-secret-service",
   "scripts": {
     "start": "node app.js"
   },
@@ -16,5 +17,8 @@
     "redis-rate-limiter": "1.0.2",
     "redis-url": "1.2.1",
     "throng": "4.0.0"
+  },
+  "engines": {
+    "node": "^8.9.0"
   }
 }
