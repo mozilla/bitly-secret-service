@@ -1,3 +1,5 @@
+**This project is not maintained anymore.**
+
 # Bitly Secret Service
 
 ## Description
